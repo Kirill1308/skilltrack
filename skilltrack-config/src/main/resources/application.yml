@@ -11,7 +11,7 @@ spring:
       server:
         git:
           uri: https://github.com/Kirill1308/skilltrack-config.git
-          default-label: main
+          default-label: master
           search-paths:
             - config/common
             - config/services/{application}
