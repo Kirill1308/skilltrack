@@ -1,0 +1,22 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  config:
+    import: optional:file:.env[.properties]
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Kirill1308/skilltrack-config.git
+          default-label: main
+          search-paths:
+            - config/common
+            - config/services/{application}
+            - config/environments/{profile}
+          clone-on-start: true
+          force-pull: true
+encrypt:
+  key: ${ENCRYPTION_KEY}
