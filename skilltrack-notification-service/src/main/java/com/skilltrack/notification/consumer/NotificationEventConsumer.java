@@ -1,7 +1,8 @@
-package com.skilltrack.notification.service;
+package com.skilltrack.notification.consumer;
 
 import com.skilltrack.common.dto.notification.request.NotificationRequest;
 import com.skilltrack.common.messaging.event.NotificationEvent;
+import com.skilltrack.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

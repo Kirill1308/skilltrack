@@ -13,6 +13,9 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.skilltrack.jwt.constant.JwtConstants.AUTHORITIES_CLAIM;
+import static com.skilltrack.jwt.constant.JwtConstants.USER_ID_CLAIM;
+
 @Service
 @RequiredArgsConstructor
 public class JwtTokenGenerator {
@@ -29,8 +32,8 @@ public class JwtTokenGenerator {
     public String generateAccessToken(UUID id, String email, Set<String> roles) {
         Claims claims = Jwts.claims()
                 .subject(email)
-                .add("id", id)
-                .add("roles", roles)
+                .add(USER_ID_CLAIM, id)
+                .add(AUTHORITIES_CLAIM, roles)
                 .build();
         Instant validity = Instant.now()
                 .plus(jwtProperties.getExpiration(), ChronoUnit.HOURS);
@@ -44,7 +47,7 @@ public class JwtTokenGenerator {
 
     public String generateRefreshToken(UUID id) {
         Claims claims = Jwts.claims()
-                .add("id", id)
+                .add(USER_ID_CLAIM, id)
                 .build();
         Instant validity = Instant.now()
                 .plus(jwtProperties.getRefreshExpiration(), ChronoUnit.HOURS);
