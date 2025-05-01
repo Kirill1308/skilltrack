@@ -8,8 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {
         "com.skilltrack.notification",
-        "com.skilltrack.common",
-        "com.skilltrack.jwt",
+        "com.skilltrack.common"
 })
 @EnableDiscoveryClient
 public class NotificationServiceApplication {

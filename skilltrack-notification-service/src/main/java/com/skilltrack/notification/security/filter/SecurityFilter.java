@@ -1,7 +1,7 @@
 package com.skilltrack.notification.security.filter;
 
-import com.skilltrack.jwt.JwtTokenExtractor;
-import com.skilltrack.jwt.model.JwtUserDetails;
+import com.skilltrack.notification.security.jwt.model.JwtUserDetails;
+import com.skilltrack.notification.security.jwt.utils.JwtTokenExtractor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,9 +19,9 @@ import java.io.IOException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final JwtTokenExtractor jwtExtractor;
