@@ -9,35 +9,28 @@ import com.skilltrack.auth.dto.response.AuthenticationResponse;
 import com.skilltrack.auth.dto.response.RegistrationResponse;
 import com.skilltrack.auth.dto.response.TokenRefreshResponse;
 import com.skilltrack.auth.exception.InvalidCredentialsException;
-import com.skilltrack.auth.exception.InvalidTokenException;
 import com.skilltrack.auth.exception.PasswordMismatchException;
-import com.skilltrack.auth.exception.TokenExpiredException;
 import com.skilltrack.auth.exception.UserInactiveException;
 import com.skilltrack.auth.exception.UserNotFoundException;
 import com.skilltrack.auth.mapper.AuthMapper;
 import com.skilltrack.auth.mapper.UserProfileMapper;
-import com.skilltrack.auth.model.PasswordResetToken;
 import com.skilltrack.auth.model.UserAuth;
-import com.skilltrack.auth.model.VerificationToken;
-import com.skilltrack.auth.repository.PasswordResetTokenRepository;
 import com.skilltrack.auth.repository.UserAuthRepository;
-import com.skilltrack.auth.repository.VerificationTokenRepository;
+import com.skilltrack.auth.security.jwt.model.JwtTokens;
+import com.skilltrack.auth.security.jwt.service.JwtService;
 import com.skilltrack.auth.service.AuthService;
+import com.skilltrack.auth.service.TokenService;
 import com.skilltrack.common.client.UserServiceClient;
+import com.skilltrack.common.constant.TokenType;
 import com.skilltrack.common.dto.user.request.UserProfileCreateRequest;
 import com.skilltrack.common.dto.user.response.UserProfileResponse;
 import com.skilltrack.common.messaging.NotificationEventProducer;
 import com.skilltrack.common.util.PasswordEncoderUtil;
-import com.skilltrack.jwt.JwtTokenExtractor;
-import com.skilltrack.jwt.JwtTokenGenerator;
-import com.skilltrack.jwt.props.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,15 +40,12 @@ import java.util.stream.Collectors;
 public class AuthServiceImpl implements AuthService {
 
     private final UserAuthRepository authRepository;
-    private final PasswordResetTokenRepository passwordResetTokenRepository;
-    private final VerificationTokenRepository verificationTokenRepository;
 
     private final UserServiceClient userServiceClient;
     private final NotificationEventProducer notificationProducer;
 
-    private final JwtProperties jwtProperties;
-    private final JwtTokenExtractor jwtTokenExtractor;
-    private final JwtTokenGenerator jwtGenerator;
+    private final JwtService jwtService;
+    private final TokenService tokenService;
 
     private final AuthMapper authMapper;
     private final UserProfileMapper profileMapper;
@@ -71,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
 
         UserAuth savedUser = authRepository.save(user);
 
-        String verificationToken = generateVerificationToken(savedUser);
+        String verificationToken = tokenService.createToken(user, TokenType.EMAIL_VERIFICATION, 7);
         notificationProducer.sendVerificationEmail(savedUser.getUserId(), savedUser.getEmail(), verificationToken);
 
         return authMapper.toRegistrationResponse(savedUser, profile);
@@ -81,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public AuthenticationResponse loginUser(LoginRequest request) {
         UserAuth user = authRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("UserAuth not found with email: " + request.getEmail()));
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.getEmail()));
 
         if (!PasswordEncoderUtil.matches(request.getPassword(), user.getPassword()))
             throw new InvalidCredentialsException("Invalid password");
@@ -91,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
         UserProfileResponse profile = userServiceClient.getUserProfileById(user.getUserId());
 
         Set<String> roles = user.getRoles().stream().map(Enum::name).collect(Collectors.toSet());
-        var tokens = jwtGenerator.generateTokens(user.getUserId(), user.getEmail(), roles);
+        JwtTokens tokens = jwtService.generateTokens(user.getUserId(), user.getEmail(), roles);
 
         return authMapper.toAuthResponse(user, profile, tokens);
     }
@@ -99,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public TokenRefreshResponse refreshToken(TokenRefreshRequest request) {
-        UUID userId = jwtTokenExtractor.extractUserId(request.getRefreshToken());
+        UUID userId = jwtService.extractUserId(request.getRefreshToken());
 
         UserAuth user = authRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
@@ -107,12 +97,12 @@ public class AuthServiceImpl implements AuthService {
         if (!user.isActive()) throw new UserInactiveException();
 
         Set<String> roles = user.getRoles().stream().map(Enum::name).collect(Collectors.toSet());
-        var newTokens = jwtGenerator.generateTokens(user.getUserId(), user.getEmail(), roles);
+        JwtTokens newTokens = jwtService.generateTokens(user.getUserId(), user.getEmail(), roles);
 
         return TokenRefreshResponse.builder()
                 .accessToken(newTokens.getAccessToken())
                 .refreshToken(newTokens.getRefreshToken())
-                .expiresIn(jwtProperties.getExpiration() * 3600)
+                .expiresIn(jwtService.getAccessTokenExpirationInSeconds())
                 .build();
     }
 
@@ -120,13 +110,13 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void initiatePasswordReset(ForgotPasswordRequest request) {
         UserAuth user = authRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("UserAuth not found with email: " + request.getEmail()));
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.getEmail()));
 
         if (!user.isActive()) throw new UserInactiveException();
 
-        passwordResetTokenRepository.deleteByUserId(user.getId());
+        tokenService.deleteUserTokensByType(user.getUserId(), TokenType.PASSWORD_RESET);
 
-        String resetToken = generatePasswordResetToken(user);
+        String resetToken = tokenService.createToken(user, TokenType.PASSWORD_RESET, 1);
 
         notificationProducer.sendPasswordResetEmail(user.getUserId(), user.getEmail(), resetToken);
     }
@@ -138,63 +128,18 @@ public class AuthServiceImpl implements AuthService {
             throw new PasswordMismatchException();
         }
 
-        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(request.getToken())
-                .orElseThrow(() -> new InvalidTokenException("Invalid password reset token"));
+        UserAuth user = tokenService.validateAndConsumeToken(request.getToken(), TokenType.PASSWORD_RESET);
 
-        if (resetToken.isExpired()) {
-            passwordResetTokenRepository.delete(resetToken);
-            throw new TokenExpiredException("Password reset token has expired");
-        }
-
-        UserAuth user = resetToken.getUser();
         user.setPassword(PasswordEncoderUtil.encode(request.getNewPassword()));
         authRepository.save(user);
-
-        passwordResetTokenRepository.delete(resetToken);
     }
 
     @Override
     @Transactional
     public void verifyEmail(String token) {
-        VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new InvalidTokenException("Invalid verification token"));
-
-        if (verificationToken.isExpired()) {
-            verificationTokenRepository.delete(verificationToken);
-            throw new TokenExpiredException("Email verification token has expired");
-        }
-
-        UserAuth user = verificationToken.getUser();
+        UserAuth user = tokenService.validateAndConsumeToken(token, TokenType.EMAIL_VERIFICATION);
         user.setEmailVerified(true);
         authRepository.save(user);
-
-        verificationTokenRepository.delete(verificationToken);
     }
 
-    private String generatePasswordResetToken(UserAuth user) {
-        String code = String.format("%06d", new Random().nextInt(1000000));
-        LocalDateTime expiryDate = LocalDateTime.now().plusDays(7);
-
-        PasswordResetToken passwordResetToken = PasswordResetToken.builder()
-                .token(code)
-                .user(user)
-                .expiryDate(expiryDate)
-                .build();
-        passwordResetTokenRepository.save(passwordResetToken);
-        return code;
-    }
-
-    private String generateVerificationToken(UserAuth user) {
-        String code = String.format("%06d", new Random().nextInt(1000000));
-        LocalDateTime expiryDate = LocalDateTime.now().plusDays(7);
-
-        VerificationToken verificationToken = VerificationToken.builder()
-                .token(code)
-                .user(user)
-                .expiryDate(expiryDate)
-                .build();
-
-        verificationTokenRepository.save(verificationToken);
-        return code;
-    }
 }

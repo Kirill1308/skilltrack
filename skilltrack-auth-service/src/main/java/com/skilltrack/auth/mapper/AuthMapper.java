@@ -4,10 +4,10 @@ import com.skilltrack.auth.dto.request.RegistrationRequest;
 import com.skilltrack.auth.dto.response.AuthenticationResponse;
 import com.skilltrack.auth.dto.response.RegistrationResponse;
 import com.skilltrack.auth.model.UserAuth;
+import com.skilltrack.auth.security.jwt.model.JwtTokens;
 import com.skilltrack.common.constant.Role;
 import com.skilltrack.common.dto.user.response.UserProfileResponse;
 import com.skilltrack.common.util.PasswordEncoderUtil;
-import com.skilltrack.jwt.model.TokenPair;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -39,7 +39,7 @@ public class AuthMapper {
                 .build();
     }
 
-    public AuthenticationResponse toAuthResponse(UserAuth user, UserProfileResponse profile, TokenPair tokens) {
+    public AuthenticationResponse toAuthResponse(UserAuth user, UserProfileResponse profile, JwtTokens tokens) {
         return AuthenticationResponse.builder()
                 .accessToken(tokens.getAccessToken())
                 .refreshToken(tokens.getRefreshToken())

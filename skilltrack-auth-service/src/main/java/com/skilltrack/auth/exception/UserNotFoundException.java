@@ -6,7 +6,7 @@ import com.skilltrack.common.exception.ErrorCode;
 import java.util.UUID;
 
 public class UserNotFoundException extends BaseException {
-    private static final String NOT_FOUND_WITH_ID = "UserAuth not found with id: %s";
+    private static final String NOT_FOUND_WITH_ID = "User not found with id: %s";
 
     public UserNotFoundException(String message) {
         super(ErrorCode.USER_NOT_FOUND, message);

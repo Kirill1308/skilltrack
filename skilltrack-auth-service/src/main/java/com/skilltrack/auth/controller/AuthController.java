@@ -11,7 +11,6 @@ import com.skilltrack.auth.dto.response.TokenRefreshResponse;
 import com.skilltrack.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,8 +54,4 @@ public class AuthController {
         authService.verifyEmail(token);
     }
 
-    @GetMapping("/secured")
-    public String securedEndpoint() {
-        return "This is a secured endpoint";
-    }
 }

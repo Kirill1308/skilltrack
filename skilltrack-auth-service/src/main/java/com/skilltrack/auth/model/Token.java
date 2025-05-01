@@ -1,7 +1,11 @@
 package com.skilltrack.auth.model;
 
+import com.skilltrack.common.constant.TokenType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,18 +18,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "verification_tokens")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VerificationToken {
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "tokens")
+public class Token {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,14 +41,23 @@ public class VerificationToken {
     @Column(nullable = false, unique = true)
     private String token;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserAuth user;
 
-    @Column(nullable = false)
+    @Column(name = "token_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TokenType tokenType;
+
+    @Column(name = "expiry_date", nullable = false)
     private LocalDateTime expiryDate;
+
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiryDate);
     }
+
 }
