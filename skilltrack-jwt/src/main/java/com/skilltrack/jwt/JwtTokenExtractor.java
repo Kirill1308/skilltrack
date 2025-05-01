@@ -16,6 +16,7 @@ import static com.skilltrack.jwt.constant.JwtConstants.USER_ID_CLAIM;
 @Service
 @RequiredArgsConstructor
 public class JwtTokenExtractor {
+
     private final SecretKeyProvider secretKeyProvider;
 
     public JwtUserDetails extractUserDetails(String token) {

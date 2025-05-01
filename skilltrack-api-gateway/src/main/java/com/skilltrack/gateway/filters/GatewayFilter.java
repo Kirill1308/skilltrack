@@ -1,12 +1,12 @@
 package com.skilltrack.gateway.filters;
 
+import com.skilltrack.gateway.jwt.JwtTokenValidator;
 import com.skilltrack.gateway.routes.RouterValidator;
-import com.skilltrack.jwt.JwtTokenValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -20,7 +20,7 @@ import static org.apache.http.HttpHeaders.AUTHORIZATION;
 @RefreshScope
 @Component
 @RequiredArgsConstructor
-public class JwtGatewayFilter implements GatewayFilter {
+public class GatewayFilter implements GlobalFilter {
 
     private final RouterValidator routerValidator;
     private final JwtTokenValidator jwtValidator;

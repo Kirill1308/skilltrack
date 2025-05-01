@@ -1,4 +1,4 @@
-package com.skilltrack.jwt;
+package com.skilltrack.gateway.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-import static com.skilltrack.jwt.constant.JwtConstants.TOKEN_PREFIX;
+import static com.skilltrack.gateway.jwt.constant.JwtConstants.TOKEN_PREFIX;
 
 @Slf4j
 @Service
