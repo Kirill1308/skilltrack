@@ -1,7 +1,7 @@
 package com.skilltrack.user.security.filter;
 
-import com.skilltrack.jwt.JwtTokenExtractor;
-import com.skilltrack.jwt.model.JwtUserDetails;
+import com.skilltrack.user.security.jwt.model.JwtUserDetails;
+import com.skilltrack.user.security.jwt.utils.JwtTokenExtractor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

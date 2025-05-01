@@ -1,4 +1,4 @@
-package com.skilltrack.jwt.constant;
+package com.skilltrack.user.security.jwt.constant;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

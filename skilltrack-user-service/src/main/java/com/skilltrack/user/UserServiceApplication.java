@@ -9,8 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 @ComponentScan(basePackages = {
         "com.skilltrack.user",
-        "com.skilltrack.common",
-        "com.skilltrack.jwt",
+        "com.skilltrack.common"
 })
 @EnableDiscoveryClient
 @EnableJpaAuditing

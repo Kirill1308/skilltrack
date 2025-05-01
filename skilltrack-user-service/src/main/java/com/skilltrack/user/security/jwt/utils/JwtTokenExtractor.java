@@ -1,6 +1,7 @@
-package com.skilltrack.jwt;
+package com.skilltrack.user.security.jwt.utils;
 
-import com.skilltrack.jwt.model.JwtUserDetails;
+import com.skilltrack.user.security.jwt.SecretKeyProvider;
+import com.skilltrack.user.security.jwt.model.JwtUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +10,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
-import static com.skilltrack.jwt.constant.JwtConstants.AUTHORITIES_CLAIM;
-import static com.skilltrack.jwt.constant.JwtConstants.TOKEN_PREFIX;
-import static com.skilltrack.jwt.constant.JwtConstants.USER_ID_CLAIM;
+import static com.skilltrack.user.security.jwt.constant.JwtConstants.AUTHORITIES_CLAIM;
+import static com.skilltrack.user.security.jwt.constant.JwtConstants.TOKEN_PREFIX;
+import static com.skilltrack.user.security.jwt.constant.JwtConstants.USER_ID_CLAIM;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,12 +34,6 @@ public class JwtTokenExtractor {
         userDetails.setAuthorities(authorities);
 
         return userDetails;
-    }
-
-    public UUID extractUserId(String token) {
-        token = removeTokenPrefix(token);
-        Claims claims = getClaims(token);
-        return UUID.fromString(claims.get(USER_ID_CLAIM, String.class));
     }
 
     private Claims getClaims(String token) {

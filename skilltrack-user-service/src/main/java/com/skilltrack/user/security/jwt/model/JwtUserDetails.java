@@ -1,4 +1,4 @@
-package com.skilltrack.jwt.model;
+package com.skilltrack.user.security.jwt.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

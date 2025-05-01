@@ -1,6 +1,6 @@
 package com.skilltrack.user.service.impl;
 
-import com.skilltrack.jwt.model.JwtUserDetails;
+import com.skilltrack.user.security.jwt.model.JwtUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

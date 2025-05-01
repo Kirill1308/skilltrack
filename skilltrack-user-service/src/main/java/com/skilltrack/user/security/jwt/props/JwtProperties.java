@@ -1,4 +1,4 @@
-package com.skilltrack.jwt.props;
+package com.skilltrack.user.security.jwt.props;
 
 import lombok.Getter;
 import lombok.Setter;

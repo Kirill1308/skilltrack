@@ -1,6 +1,6 @@
-package com.skilltrack.jwt;
+package com.skilltrack.user.security.jwt;
 
-import com.skilltrack.jwt.props.JwtProperties;
+import com.skilltrack.user.security.jwt.props.JwtProperties;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -13,9 +13,9 @@ import javax.crypto.SecretKey;
 @RequiredArgsConstructor
 public class SecretKeyProvider {
 
-    private final JwtProperties jwtProperties;
     @Getter
     private SecretKey key;
+    private final JwtProperties jwtProperties;
 
     @PostConstruct
     public void init() {

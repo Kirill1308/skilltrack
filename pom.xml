@@ -12,7 +12,6 @@
 
 	<modules>
 		<module>skilltrack-bom</module>
-		<module>skilltrack-jwt</module>
 		<module>skilltrack-common</module>
 
 		<module>skilltrack-discovery</module>
