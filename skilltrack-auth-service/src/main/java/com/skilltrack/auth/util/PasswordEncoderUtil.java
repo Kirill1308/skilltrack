@@ -1,4 +1,4 @@
-package com.skilltrack.common.util;
+package com.skilltrack.auth.util;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

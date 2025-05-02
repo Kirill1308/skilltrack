@@ -1,4 +1,4 @@
-package com.skilltrack.common.messaging.config;
+package com.skilltrack.notification.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -17,11 +17,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${app.rabbitmq.exchange}")
+    @Value("${messaging.exchange}")
     private String exchange;
 
-    @Value("${app.rabbitmq.dead-letter-exchange}")
+    @Value("${messaging.dead-letter-exchange}")
     private String deadLetterExchange;
+
+    @Value("${messaging.queues.notification}")
+    private String queue;
+
+    @Value("${messaging.queues.notification-dead-letter}")
+    private String deadLetterQueue;
+
+    @Value("${messaging.routing-keys.notification}")
+    private String routingKey;
+
+    @Value("${messaging.routing-keys.dead-letter}")
+    private String deadLetterRoutingKey;
 
     @Bean
     public MessageConverter jsonMessageConverter() {
@@ -45,47 +57,32 @@ public class RabbitMQConfig {
         return new DirectExchange(deadLetterExchange);
     }
 
-    // ===== NOTIFICATION QUEUE CONFIGURATION =====
-
-    @Value("${app.rabbitmq.queues.notification}")
-    private String notificationQueue;
-
-    @Value("${app.rabbitmq.queues.notification-dead-letter}")
-    private String notificationDeadLetterQueue;
-
-    @Value("${app.rabbitmq.routing-keys.notification}")
-    private String notificationRoutingKey;
-
-    @Value("${app.rabbitmq.routing-keys.dead-letter}")
-    private String deadLetterRoutingKey;
-
     @Bean
-    public Queue notificationQueue() {
-        return QueueBuilder.durable(notificationQueue)
+    public Queue queue() {
+        return QueueBuilder.durable(queue)
                 .withArgument("x-dead-letter-exchange", deadLetterExchange)
                 .withArgument("x-dead-letter-routing-key", deadLetterRoutingKey)
                 .build();
     }
 
     @Bean
-    public Queue notificationDeadLetterQueue() {
-        return QueueBuilder.durable(notificationDeadLetterQueue).build();
+    public Queue deadLetterQueue() {
+        return QueueBuilder.durable(deadLetterQueue).build();
     }
 
     @Bean
-    public Binding notificationBinding() {
+    public Binding binding() {
         return BindingBuilder
-                .bind(notificationQueue())
+                .bind(queue())
                 .to(topicExchange())
-                .with(notificationRoutingKey);
+                .with(routingKey);
     }
 
     @Bean
-    public Binding notificationDeadLetterBinding() {
+    public Binding deadLetterBinding() {
         return BindingBuilder
-                .bind(notificationDeadLetterQueue())
+                .bind(deadLetterQueue())
                 .to(deadLetterExchange())
                 .with(deadLetterRoutingKey);
     }
-
 }

@@ -25,5 +25,4 @@ public class NotificationResponse {
     private LocalDateTime readAt;
     private boolean read;
     private String eventType;
-    private UUID referenceId;
 }

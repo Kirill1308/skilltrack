@@ -1,6 +1,6 @@
 package com.skilltrack.auth.dto.request;
 
-import com.skilltrack.common.validation.annotation.ValidPassword;
+import com.skilltrack.auth.validation.annotation.ValidPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

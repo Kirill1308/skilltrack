@@ -15,19 +15,18 @@ public class NotificationEventConsumer {
 
     private final NotificationService notificationService;
 
-    @RabbitListener(queues = "${app.rabbitmq.queues.notification}")
+    @RabbitListener(queues = "${messaging.queues.notification}")
     public void consumeNotification(NotificationEvent event) {
         log.info("Received notification event: {}", event);
 
         try {
             NotificationRequest request = NotificationRequest.builder()
-                    .senderId(event.getUserId().toString())
+                    .senderId(event.getSenderId().toString())
                     .recipient(event.getRecipient())
                     .subject(event.getSubject())
                     .content(event.getContent())
                     .type(event.getType())
                     .eventType(event.getEventType())
-                    .referenceId(event.getReferenceId())
                     .build();
 
             notificationService.createNotification(request);
@@ -40,7 +39,7 @@ public class NotificationEventConsumer {
         }
     }
 
-    @RabbitListener(queues = "${app.rabbitmq.queues.notification-dead-letter}")
+    @RabbitListener(queues = "${messaging.queues.notification-dead-letter}")
     public void handleDeadLetterNotification(NotificationEvent event) {
         log.error("Processing dead letter notification: {}", event);
         // Implement logic for handling failed messages

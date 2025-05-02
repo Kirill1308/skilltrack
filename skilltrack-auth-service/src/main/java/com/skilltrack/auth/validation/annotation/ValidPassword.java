@@ -1,6 +1,6 @@
-package com.skilltrack.common.validation.annotation;
+package com.skilltrack.auth.validation.annotation;
 
-import com.skilltrack.common.validation.PasswordValidator;
+import com.skilltrack.auth.validation.PasswordValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

@@ -7,7 +7,7 @@ import com.skilltrack.auth.model.UserAuth;
 import com.skilltrack.auth.security.jwt.model.JwtTokens;
 import com.skilltrack.common.constant.Role;
 import com.skilltrack.common.dto.user.response.UserProfileResponse;
-import com.skilltrack.common.util.PasswordEncoderUtil;
+import com.skilltrack.auth.util.PasswordEncoderUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -21,7 +21,6 @@ public class AuthMapper {
                 .email(request.getEmail())
                 .password(PasswordEncoderUtil.encode(request.getPassword()))
                 .roles(Set.of(Role.ROLE_USER))
-                .active(true)
                 .emailVerified(false)
                 .build();
     }

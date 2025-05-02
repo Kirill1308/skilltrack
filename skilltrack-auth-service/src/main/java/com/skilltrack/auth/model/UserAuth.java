@@ -59,9 +59,6 @@ public class UserAuth {
     @Column(name = "role", nullable = false)
     private Set<Role> roles = new HashSet<>();
 
-    @Column(name = "active", nullable = false)
-    private boolean active;
-
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified;
 

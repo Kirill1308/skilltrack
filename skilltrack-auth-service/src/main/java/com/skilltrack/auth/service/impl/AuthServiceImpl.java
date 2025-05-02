@@ -10,7 +10,6 @@ import com.skilltrack.auth.dto.response.RegistrationResponse;
 import com.skilltrack.auth.dto.response.TokenRefreshResponse;
 import com.skilltrack.auth.exception.InvalidCredentialsException;
 import com.skilltrack.auth.exception.PasswordMismatchException;
-import com.skilltrack.auth.exception.UserInactiveException;
 import com.skilltrack.auth.exception.UserNotFoundException;
 import com.skilltrack.auth.mapper.AuthMapper;
 import com.skilltrack.auth.mapper.UserProfileMapper;
@@ -24,8 +23,8 @@ import com.skilltrack.common.client.UserServiceClient;
 import com.skilltrack.common.constant.TokenType;
 import com.skilltrack.common.dto.user.request.UserProfileCreateRequest;
 import com.skilltrack.common.dto.user.response.UserProfileResponse;
-import com.skilltrack.common.messaging.NotificationEventProducer;
-import com.skilltrack.common.util.PasswordEncoderUtil;
+import com.skilltrack.auth.messaging.NotificationEventProducer;
+import com.skilltrack.auth.util.PasswordEncoderUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,8 +75,6 @@ public class AuthServiceImpl implements AuthService {
         if (!PasswordEncoderUtil.matches(request.getPassword(), user.getPassword()))
             throw new InvalidCredentialsException("Invalid password");
 
-        if (!user.isActive()) throw new UserInactiveException();
-
         UserProfileResponse profile = userServiceClient.getUserProfileById(user.getUserId());
 
         Set<String> roles = user.getRoles().stream().map(Enum::name).collect(Collectors.toSet());
@@ -94,8 +91,6 @@ public class AuthServiceImpl implements AuthService {
         UserAuth user = authRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        if (!user.isActive()) throw new UserInactiveException();
-
         Set<String> roles = user.getRoles().stream().map(Enum::name).collect(Collectors.toSet());
         JwtTokens newTokens = jwtService.generateTokens(user.getUserId(), user.getEmail(), roles);
 
@@ -111,8 +106,6 @@ public class AuthServiceImpl implements AuthService {
     public void initiatePasswordReset(ForgotPasswordRequest request) {
         UserAuth user = authRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.getEmail()));
-
-        if (!user.isActive()) throw new UserInactiveException();
 
         tokenService.deleteUserTokensByType(user.getUserId(), TokenType.PASSWORD_RESET);
 

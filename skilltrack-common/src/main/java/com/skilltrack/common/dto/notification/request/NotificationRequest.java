@@ -35,5 +35,4 @@ public class NotificationRequest {
 
     private String eventType;
 
-    private UUID referenceId;
 }

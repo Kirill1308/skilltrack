@@ -15,6 +15,5 @@ import java.util.UUID;
 public abstract class BaseEvent {
     private UUID eventId;
     private String eventType;
-    private UUID referenceId;
     private Instant timestamp;
 }

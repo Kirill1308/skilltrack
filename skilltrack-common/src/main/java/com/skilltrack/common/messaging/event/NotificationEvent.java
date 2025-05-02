@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationEvent extends BaseEvent {
-    private UUID userId;
+    private UUID senderId;
     private String recipient;
     private String subject;
     private String content;

@@ -37,7 +37,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .content(request.getContent())
                 .type(request.getType())
                 .eventType(request.getEventType())
-                .referenceId(request.getReferenceId())
                 .read(false)
                 .build();
 
@@ -126,7 +125,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .readAt(notification.getReadAt())
                 .read(notification.isRead())
                 .eventType(notification.getEventType())
-                .referenceId(notification.getReferenceId())
                 .build();
     }
 }

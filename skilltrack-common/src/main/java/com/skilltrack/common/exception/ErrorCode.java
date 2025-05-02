@@ -18,7 +18,6 @@ public enum ErrorCode {
     // User Management
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "A user with this email already exists"),
-    USER_INACTIVE(HttpStatus.FORBIDDEN, "User account is inactive"),
     INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "Invalid email format"),
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "Password doesn't meet requirements"),
     EMAIL_VERIFICATION_REQUIRED(HttpStatus.FORBIDDEN, "Email verification required to access this resource"),
