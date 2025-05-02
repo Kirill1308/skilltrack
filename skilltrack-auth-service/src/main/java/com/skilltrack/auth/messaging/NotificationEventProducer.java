@@ -1,7 +1,6 @@
 package com.skilltrack.auth.messaging;
 
 import com.skilltrack.auth.config.NotificationTemplateConfig;
-import com.skilltrack.common.constant.NotificationType;
 import com.skilltrack.common.messaging.event.NotificationEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +36,6 @@ public class NotificationEventProducer {
                 .recipient(email)
                 .subject(subject)
                 .content(message)
-                .type(NotificationType.EMAIL)
                 .eventType("EMAIL_VERIFICATION")
                 .timestamp(Instant.now())
                 .build();
@@ -55,7 +53,6 @@ public class NotificationEventProducer {
                 .recipient(email)
                 .subject(subject)
                 .content(message)
-                .type(NotificationType.EMAIL)
                 .eventType("PASSWORD_RESET")
                 .timestamp(Instant.now())
                 .build();

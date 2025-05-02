@@ -25,7 +25,6 @@ public class NotificationEventConsumer {
                     .recipient(event.getRecipient())
                     .subject(event.getSubject())
                     .content(event.getContent())
-                    .type(event.getType())
                     .eventType(event.getEventType())
                     .build();
 

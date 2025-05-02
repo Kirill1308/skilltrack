@@ -1,6 +1,5 @@
 package com.skilltrack.common.dto.notification.request;
 
-import com.skilltrack.common.constant.NotificationType;
 import com.skilltrack.common.validation.annotation.ValidUUID;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @Data
 @Builder
@@ -29,9 +26,6 @@ public class NotificationRequest {
 
     @NotBlank(message = "Content is required")
     private String content;
-
-    @NotNull(message = "Type is required")
-    private NotificationType type;
 
     private String eventType;
 

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,12 +34,11 @@ public class NotificationController {
     @GetMapping("/users/{userId}")
     public Page<NotificationResponse> getUserNotifications(
             @PathVariable UUID userId,
-            @RequestParam(defaultValue = "false") boolean unreadOnly,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return notificationService.getUserNotifications(userId, unreadOnly, pageRequest);
+        return notificationService.getUserNotifications(userId, pageRequest);
     }
 
     @GetMapping("/{id}")
@@ -48,18 +46,9 @@ public class NotificationController {
         return notificationService.getNotificationById(id);
     }
 
-    @PutMapping("/{id}/read")
-    public void markAsRead(@PathVariable String id) {
-        notificationService.markAsRead(id);
-    }
-
-    @PutMapping("/users/{userId}/read-all")
-    public void markAllAsRead(@PathVariable UUID userId) {
-        notificationService.markAllAsRead(userId);
-    }
-
     @DeleteMapping("/{id}")
     public void deleteNotification(@PathVariable String id) {
         notificationService.deleteNotification(id);
     }
+
 }
