@@ -1,5 +1,6 @@
 package com.skilltrack.user.service.impl;
 
+import com.skilltrack.common.dto.user.request.ProfilePictureUploadRequest;
 import com.skilltrack.common.dto.user.request.UserProfileCreateRequest;
 import com.skilltrack.common.dto.user.request.UserProfileUpdateRequest;
 import com.skilltrack.common.dto.user.response.UserProfileResponse;
@@ -11,6 +12,7 @@ import com.skilltrack.user.model.Department;
 import com.skilltrack.user.model.UserProfile;
 import com.skilltrack.user.repository.DepartmentRepository;
 import com.skilltrack.user.repository.UserProfileRepository;
+import com.skilltrack.user.service.FileStorageService;
 import com.skilltrack.user.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import java.util.UUID;
 public class UserProfileServiceImpl implements UserProfileService {
 
     private final CurrentUserService currentUserService;
+    private final FileStorageService fileStorageService;
     private final UserProfileRepository profileRepository;
     private final DepartmentRepository departmentRepository;
     private final UserProfileMapper profileMapper;
@@ -40,7 +43,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         UserProfile profile = profileMapper.toUserProfile(request, department);
 
-        UserProfile savedProfile = this.profileRepository.save(profile);
+        UserProfile savedProfile = profileRepository.save(profile);
 
         return profileMapper.toUserProfileResponse(savedProfile);
     }
@@ -67,7 +70,36 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     @Transactional
     public UserProfileResponse updateUserProfile(UUID id, UserProfileUpdateRequest request) {
-        return null;
+        UserProfile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new UserProfileNotFoundException(id));
+
+        Department department = departmentRepository.findByName(request.getDepartment())
+                .orElseThrow(() -> new DepartmentNotFoundException(request.getDepartment()));
+
+        profileMapper.updateUserProfileFromRequest(profile, request, department);
+
+
+        UserProfile updatedProfile = profileRepository.save(profile);
+
+        return profileMapper.toUserProfileResponse(updatedProfile);
+    }
+
+    @Override
+    @Transactional
+    public UserProfileResponse updateUserProfilePicture(UUID id, ProfilePictureUploadRequest request) {
+        UserProfile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new UserProfileNotFoundException(id));
+
+        if (profile.getProfilePictureFilename() != null) {
+            fileStorageService.delete(profile.getProfilePictureFilename());
+        }
+
+        String fileName = fileStorageService.upload(request.getFile());
+        profile.setProfilePictureFilename(fileName);
+
+        UserProfile updatedProfile = profileRepository.save(profile);
+
+        return profileMapper.toUserProfileResponse(updatedProfile);
     }
 
     @Override

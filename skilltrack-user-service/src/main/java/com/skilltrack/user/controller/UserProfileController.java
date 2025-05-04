@@ -1,5 +1,6 @@
 package com.skilltrack.user.controller;
 
+import com.skilltrack.common.dto.user.request.ProfilePictureUploadRequest;
 import com.skilltrack.common.dto.user.request.UserProfileCreateRequest;
 import com.skilltrack.common.dto.user.request.UserProfileUpdateRequest;
 import com.skilltrack.common.dto.user.response.UserProfileResponse;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -48,6 +51,15 @@ public class UserProfileController {
             @Valid @RequestBody UserProfileUpdateRequest request
     ) {
         return userProfileService.updateUserProfile(id, request);
+    }
+
+    @PatchMapping("/{id}/profile-picture")
+    @PreAuthorize("@profileSecurity.isCurrentUser(#id) or hasRole('ADMIN')")
+    public UserProfileResponse updateProfilePicture(
+            @PathVariable UUID id,
+            @Valid @ModelAttribute ProfilePictureUploadRequest request
+    ) {
+        return userProfileService.updateUserProfilePicture(id, request);
     }
 
     @GetMapping("/by-department/{departmentId}")

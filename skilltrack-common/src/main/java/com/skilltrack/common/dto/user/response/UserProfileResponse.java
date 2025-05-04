@@ -27,7 +27,7 @@ public class UserProfileResponse {
 
     private String jobTitle;
 
-    private String profilePictureUrl;
+    private String profilePictureFilename;
 
     private List<SkillSummaryResponse> skills;
 

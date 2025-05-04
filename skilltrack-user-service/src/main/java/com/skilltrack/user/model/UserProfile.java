@@ -53,8 +53,8 @@ public class UserProfile {
     @Column(name = "job_title")
     private String jobTitle;
 
-    @Column(name = "profile_picture_url")
-    private String profilePictureUrl;
+    @Column(name = "profile_picture_filename")
+    private String profilePictureFilename;
 
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;

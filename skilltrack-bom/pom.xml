@@ -24,6 +24,7 @@
         <!-- Database -->
         <postgresql.version>42.7.3</postgresql.version>
         <flyway.version>10.15.0</flyway.version>
+        <minio-version>8.5.14</minio-version>
 
         <!-- Utils -->
         <lombok.version>1.18.30</lombok.version>
@@ -86,6 +87,13 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-database-postgresql</artifactId>
                 <version>${flyway.version}</version>
+            </dependency>
+
+            <!-- File Storage -->
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio-version}</version>
             </dependency>
 
             <!-- Utils -->

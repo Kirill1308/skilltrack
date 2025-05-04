@@ -1,6 +1,7 @@
 package com.skilltrack.user.mapper;
 
 import com.skilltrack.common.dto.user.request.UserProfileCreateRequest;
+import com.skilltrack.common.dto.user.request.UserProfileUpdateRequest;
 import com.skilltrack.common.dto.user.response.UserProfileResponse;
 import com.skilltrack.user.model.Department;
 import com.skilltrack.user.model.UserProfile;
@@ -24,7 +25,7 @@ public class UserProfileMapper {
                 .email(user.getEmail())
                 .department(user.getDepartment() != null ? user.getDepartment().getName() : null)
                 .jobTitle(user.getJobTitle())
-                .profilePictureUrl(user.getProfilePictureUrl())
+                .profilePictureFilename(user.getProfilePictureFilename())
                 .skills(skillMapper.toSummaryResponseList(user.getUserSkills()))
                 .certifications(certificationMapper.toSummaryResponseList(user.getCertifications()))
                 .createdAt(user.getCreatedAt())
@@ -47,5 +48,13 @@ public class UserProfileMapper {
                 .bio(request.getBio())
                 .department(department)
                 .build();
+    }
+
+    public void updateUserProfileFromRequest(UserProfile profile, UserProfileUpdateRequest request, Department department) {
+        profile.setFirstName(request.getFirstName());
+        profile.setLastName(request.getLastName());
+        profile.setDepartment(department);
+        profile.setJobTitle(request.getJobTitle());
+        profile.setBio(request.getBio());
     }
 }

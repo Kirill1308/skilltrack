@@ -1,5 +1,6 @@
 package com.skilltrack.user.service;
 
+import com.skilltrack.common.dto.user.request.ProfilePictureUploadRequest;
 import com.skilltrack.common.dto.user.request.UserProfileCreateRequest;
 import com.skilltrack.common.dto.user.request.UserProfileUpdateRequest;
 import com.skilltrack.common.dto.user.response.UserProfileResponse;
@@ -16,6 +17,8 @@ public interface UserProfileService {
     UserProfileResponse getCurrentUserProfile();
 
     UserProfileResponse updateUserProfile(UUID id, UserProfileUpdateRequest request);
+
+    UserProfileResponse updateUserProfilePicture(UUID id, ProfilePictureUploadRequest request);
 
     List<UserProfileResponse> getUserProfilesByDepartment(UUID departmentId);
 
