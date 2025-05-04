@@ -3,10 +3,10 @@ package com.skilltrack.auth.service.impl;
 import com.skilltrack.auth.exception.InvalidTokenException;
 import com.skilltrack.auth.exception.TokenExpiredException;
 import com.skilltrack.auth.model.Token;
+import com.skilltrack.auth.model.TokenType;
 import com.skilltrack.auth.model.UserAuth;
 import com.skilltrack.auth.repository.TokenRepository;
 import com.skilltrack.auth.service.TokenService;
-import com.skilltrack.auth.model.TokenType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -47,6 +47,7 @@ public class TokenServiceImpl implements TokenService {
 
         if (token.isExpired()) {
             tokenRepository.delete(token);
+
             throw new TokenExpiredException("Token has expired: " + tokenValue);
         }
 

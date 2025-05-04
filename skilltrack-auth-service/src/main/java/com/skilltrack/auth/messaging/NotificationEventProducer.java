@@ -12,9 +12,9 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class NotificationEventProducer {
 
     private final RabbitTemplate rabbitTemplate;

@@ -28,24 +28,37 @@ public class GatewayFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        String path = request.getPath().toString();
+        String method = request.getMethod().toString();
+
+        log.info("Processing request - Method: {}, Path: {}", method, path);
+
         if (routerValidator.isSecuredRequest(request)) {
+            log.debug("Request requires authentication - Path: {}", path);
+
             if (authMissing(request)) {
+                log.warn("Authorization header missing for secured endpoint - Path: {}", path);
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
 
             try {
                 String token = request.getHeaders().getFirst(AUTHORIZATION);
+
                 if (!jwtValidator.isValid(token)) {
+                    log.warn("Invalid JWT token for path: {}", path);
                     return onError(exchange, HttpStatus.UNAUTHORIZED);
                 }
 
+                log.info("Successfully validated JWT token for path: {}", path);
                 return chain.filter(exchange);
 
             } catch (Exception e) {
-                log.error("Error processing JWT token", e);
+                log.error("Error processing JWT token for path: {} - Error: {}", path, e.getMessage(), e);
                 return onError(exchange, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+
+        log.debug("Request does not require authentication - Path: {}", path);
         return chain.filter(exchange);
     }
 
@@ -54,8 +67,12 @@ public class GatewayFilter implements GlobalFilter {
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, HttpStatus status) {
+        ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(status);
+
+        log.error("Returning error response - Status: {}, Path: {}", status, request.getPath());
+
         return response.setComplete();
     }
 }
