@@ -18,5 +18,10 @@ spring:
             - config/environments/{profile}
           clone-on-start: true
           force-pull: true
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
 encrypt:
   key: ${ENCRYPTION_KEY}

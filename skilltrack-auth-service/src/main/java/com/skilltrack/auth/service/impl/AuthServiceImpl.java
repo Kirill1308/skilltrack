@@ -20,7 +20,7 @@ import com.skilltrack.auth.security.jwt.service.JwtService;
 import com.skilltrack.auth.service.AuthService;
 import com.skilltrack.auth.service.TokenService;
 import com.skilltrack.common.client.UserServiceClient;
-import com.skilltrack.common.constant.TokenType;
+import com.skilltrack.auth.model.TokenType;
 import com.skilltrack.common.dto.user.request.UserProfileCreateRequest;
 import com.skilltrack.common.dto.user.response.UserProfileResponse;
 import com.skilltrack.auth.messaging.NotificationEventProducer;

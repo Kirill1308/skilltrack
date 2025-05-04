@@ -1,4 +1,4 @@
-package com.skilltrack.common.dto.assessment.response;
+package com.skilltrack.common.dto.skill.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

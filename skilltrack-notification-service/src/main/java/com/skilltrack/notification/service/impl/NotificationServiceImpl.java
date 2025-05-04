@@ -73,7 +73,7 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationResponse mapToResponse(Notification notification) {
         return NotificationResponse.builder()
                 .id(notification.getId())
-                .userId(notification.getSenderId())
+                .senderId(notification.getSenderId())
                 .recipient(notification.getRecipient())
                 .subject(notification.getSubject())
                 .content(notification.getContent())

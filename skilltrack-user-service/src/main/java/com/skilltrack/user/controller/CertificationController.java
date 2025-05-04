@@ -1,7 +1,7 @@
 package com.skilltrack.user.controller;
 
-import com.skilltrack.common.dto.assessment.request.CertificationCreateRequest;
-import com.skilltrack.common.dto.assessment.response.CertificationResponse;
+import com.skilltrack.common.dto.skill.request.CertificationCreateRequest;
+import com.skilltrack.common.dto.skill.response.CertificationResponse;
 import com.skilltrack.user.service.CertificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

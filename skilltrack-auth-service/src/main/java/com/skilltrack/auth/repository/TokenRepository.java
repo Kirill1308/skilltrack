@@ -1,7 +1,7 @@
 package com.skilltrack.auth.repository;
 
 import com.skilltrack.auth.model.Token;
-import com.skilltrack.common.constant.TokenType;
+import com.skilltrack.auth.model.TokenType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

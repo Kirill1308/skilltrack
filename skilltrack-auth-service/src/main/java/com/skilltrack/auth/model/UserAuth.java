@@ -1,6 +1,5 @@
 package com.skilltrack.auth.model;
 
-import com.skilltrack.common.constant.Role;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;

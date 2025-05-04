@@ -1,7 +1,7 @@
 package com.skilltrack.user.service.impl;
 
-import com.skilltrack.common.dto.assessment.request.CertificationCreateRequest;
-import com.skilltrack.common.dto.assessment.response.CertificationResponse;
+import com.skilltrack.common.dto.skill.request.CertificationCreateRequest;
+import com.skilltrack.common.dto.skill.response.CertificationResponse;
 import com.skilltrack.user.service.CertificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

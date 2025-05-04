@@ -1,4 +1,4 @@
-package com.skilltrack.common.constant;
+package com.skilltrack.auth.model;
 
 public enum Role {
     ROLE_USER,

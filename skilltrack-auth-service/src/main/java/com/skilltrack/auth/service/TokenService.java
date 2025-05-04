@@ -1,7 +1,7 @@
 package com.skilltrack.auth.service;
 
 import com.skilltrack.auth.model.UserAuth;
-import com.skilltrack.common.constant.TokenType;
+import com.skilltrack.auth.model.TokenType;
 
 import java.util.UUID;
 

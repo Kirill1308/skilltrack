@@ -89,6 +89,25 @@
 					<artifactId>flyway-maven-plugin</artifactId>
 					<version>${flyway-maven-plugin.version}</version>
 				</plugin>
+
+				<!-- Jib Maven Plugin -->
+				<plugin>
+					<groupId>com.google.cloud.tools</groupId>
+					<artifactId>jib-maven-plugin</artifactId>
+					<version>3.4.5</version>
+					<configuration>
+						<from>
+							<image>eclipse-temurin:21-jre</image>
+						</from>
+						<to>
+							<image>registry.hub.docker.com/kirill1308/${project.artifactId}</image>
+							<auth>
+								<username>${env.DOCKER_USERNAME}</username>
+								<password>${env.DOCKER_PASSWORD}</password>
+							</auth>
+						</to>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

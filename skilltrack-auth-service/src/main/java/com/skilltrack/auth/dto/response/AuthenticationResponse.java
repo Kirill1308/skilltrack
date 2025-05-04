@@ -1,6 +1,5 @@
 package com.skilltrack.auth.dto.response;
 
-import com.skilltrack.common.constant.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +26,6 @@ public class AuthenticationResponse {
 
     private String email;
 
-    private Set<Role> roles;
+    private Set<String> roles;
 
 }

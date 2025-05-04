@@ -1,4 +1,4 @@
-package com.skilltrack.common.dto.assessment.request;
+package com.skilltrack.common.dto.skill.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

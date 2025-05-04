@@ -1,5 +1,152 @@
-version: "3.8"
+version: '3.8'
+
 services:
+  # Discovery Service (Eureka)
+  discovery-service:
+    image: registry.hub.docker.com/kirill1308/skilltrack-discovery:latest
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - skilltrack-network
+
+  # Config Server
+  config-server:
+    image: registry.hub.docker.com/kirill1308/skilltrack-config:latest
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    env_file:
+      - ../.env
+    environment:
+      - EUREKA_URL=http://discovery-service:8761/eureka/
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skilltrack-network
+
+  # API Gateway
+  gateway-service:
+    image: registry.hub.docker.com/kirill1308/skilltrack-api-gateway:latest
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - skilltrack-network
+
+  # Auth Service
+  auth-service:
+    image: registry.hub.docker.com/kirill1308/skilltrack-auth-service:latest
+    container_name: auth-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      auth-db:
+        condition: service_healthy
+    networks:
+      - skilltrack-network
+
+  # User Service
+  user-service:
+    image: registry.hub.docker.com/kirill1308/skilltrack-user-service:latest
+    container_name: user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      user-db:
+        condition: service_healthy
+    networks:
+      - skilltrack-network
+
+  # Notification Service
+  notification-service:
+    image: registry.hub.docker.com/kirill1308/skilltrack-notification-service:latest
+    container_name: notification-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - skilltrack-network
+
+  # Auth Service Database
+  auth-db:
+    image: postgres:14-alpine
+    container_name: auth-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=skilltrack_auth
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skilltrack-network
+
+  # User Service Database
+  user-db:
+    image: postgres:14-alpine
+    container_name: user-db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=skilltrack_user
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skilltrack-network
+
+  # RabbitMQ for messaging
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -19,7 +166,7 @@ services:
     networks:
       - skilltrack-network
 
-  # MongoDB for skilltrack-notification-service
+  # MongoDB for notification-service
   mongo:
     image: mongo
     container_name: mongo
@@ -30,10 +177,16 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - data:/data
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - skilltrack-network
 
+  # MongoDB Express Web UI
   mongo-express:
     image: mongo-express
     container_name: mongo-express
@@ -49,11 +202,12 @@ services:
     networks:
       - skilltrack-network
 
+volumes:
+  auth-db-data:
+  user-db-data:
+  rabbitmq_data:
+  mongo_data:
+
 networks:
   skilltrack-network:
     driver: bridge
-
-volumes:
-  redis_data:
-  rabbitmq_data:
-  data: {}
