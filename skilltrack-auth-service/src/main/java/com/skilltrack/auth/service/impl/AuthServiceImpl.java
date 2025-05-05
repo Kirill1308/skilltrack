@@ -57,8 +57,6 @@ public class AuthServiceImpl implements AuthService {
         log.info("Starting user registration process for email: {}", request.getEmail());
 
         UserProfileCreateRequest profileCreateRequest = profileMapper.toCreateRequest(request);
-        log.debug("Mapped registration request to profile create request");
-
         UserProfileResponse profile = userServiceClient.createUserProfile(profileCreateRequest);
         log.info("User profile created successfully with ID: {}", profile.getId());
 

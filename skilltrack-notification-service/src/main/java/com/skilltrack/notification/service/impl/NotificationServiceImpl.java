@@ -30,8 +30,6 @@ public class NotificationServiceImpl implements NotificationService {
         log.info("Creating notification: type={}, recipient={}", request.getEventType(), request.getRecipient());
 
         Notification notification = notificationMapper.toEntity(request);
-        log.debug("Mapped notification request to entity with ID: {}", notification.getId());
-
         Notification savedNotification = notificationRepository.save(notification);
         log.info("Notification saved successfully with ID: {}", savedNotification.getId());
 

@@ -10,7 +10,6 @@ import com.skilltrack.auth.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -22,7 +21,6 @@ public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;
 
-    @Transactional
     public String createToken(UserAuth user, TokenType tokenType, int expiryDays) {
         tokenRepository.deleteByUserIdAndTokenType(user.getId(), tokenType);
 
@@ -40,7 +38,6 @@ public class TokenServiceImpl implements TokenService {
         return tokenValue;
     }
 
-    @Transactional
     public UserAuth validateToken(String tokenValue, TokenType tokenType) {
         Token token = tokenRepository.findByTokenAndTokenType(tokenValue, tokenType)
                 .orElseThrow(() -> new InvalidTokenException("Invalid token: " + tokenValue));
@@ -54,14 +51,12 @@ public class TokenServiceImpl implements TokenService {
         return token.getUser();
     }
 
-    @Transactional
     public UserAuth validateAndConsumeToken(String tokenValue, TokenType tokenType) {
         UserAuth user = validateToken(tokenValue, tokenType);
         tokenRepository.deleteByTokenAndTokenType(tokenValue, tokenType);
         return user;
     }
 
-    @Transactional
     public void deleteUserTokensByType(UUID userId, TokenType tokenType) {
         tokenRepository.deleteByUserIdAndTokenType(userId, tokenType);
     }
@@ -69,7 +64,6 @@ public class TokenServiceImpl implements TokenService {
     @Override
     @Scheduled(cron = "0 0 0 * * ?")
     //    TODO: Configure scheduler
-    @Transactional
     public void cleanupExpiredTokens() {
         tokenRepository.deleteAllExpiredTokens(LocalDateTime.now());
     }

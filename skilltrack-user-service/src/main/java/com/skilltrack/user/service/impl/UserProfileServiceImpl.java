@@ -108,9 +108,7 @@ public class UserProfileServiceImpl implements UserProfileService {
                     return new DepartmentNotFoundException(request.getDepartment());
                 });
 
-        log.debug("Mapping update request for user profile ID: {}", id);
         profileMapper.updateUserProfileFromRequest(profile, request, department);
-
         UserProfile updatedProfile = profileRepository.save(profile);
 
         log.info("User profile updated successfully for ID: {}", id);
